@@ -35,6 +35,52 @@ class ProductDetailScreen extends StatelessWidget {
           ],
         ),
       ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Card(
+              elevation: 15,
+              child: ClipRRect(
+                child: Container(
+                  height: 400,
+                  width: double.infinity,
+                  child: Image.network(
+                    loadedProduct.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              color: Colors.transparent,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text(
+              '₹ ${loadedProduct.price}',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).accentColor,
+                fontSize: 25,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
+              child: Text(
+                loadedProduct.description,
+                textAlign: TextAlign.center,
+                softWrap: true,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../Widgets/app_drawer.dart';
 import '../Screens/cart_screen.dart';
 import '../providers/products_provider.dart';
 import '../Widgets/products_gridView.dart';
@@ -91,7 +92,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ),
         ],
       ),
-
+      drawer: AppDrawer(),
       //builder method works the same way as listView.builder which helps in effiecient performance
       body: ProductsGridView(_showFavouritesOnly),
     );
