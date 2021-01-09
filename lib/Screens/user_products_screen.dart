@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/products_provider.dart';
-
+import './edit_product_screen.dart';
 import '../Widgets/user_product_item.dart';
+import '../Widgets/app_drawer.dart';
 
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/userpscreen';
@@ -37,10 +38,13 @@ class UserProductsScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(EditProductScreen.routeName);
+            },
           )
         ],
       ),
+      drawer: AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(5),
         child: ListView.builder(
