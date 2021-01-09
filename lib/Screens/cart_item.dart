@@ -51,7 +51,8 @@ class CartItem extends StatelessWidget {
             actions: [
               FloatingActionButton(
                 onPressed: () {
-                  Navigator.of(ctx).pop(false);
+                  Navigator.of(ctx).pop(
+                      false); //Future resolves the value that gets passed to Navigator.pop
                 },
                 child: Text('No'),
               ),
