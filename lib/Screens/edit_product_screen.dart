@@ -44,6 +44,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _updateImageUrl() {
     if (!_imageUrlFocusNode.hasFocus) {
+      if (_imageUrlController.text.isEmpty ||
+          !_imageUrlController.text.startsWith('http') &&
+              !_imageUrlController.text.startsWith('https')) {
+        return;
+      }
+
       setState(() {});
     }
   }
@@ -92,7 +98,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
             icon: Icon(
               Icons.save,
             ),
-            onPressed: () {},
+            onPressed: () {
+              _saveForm();
+            },
           ),
         ],
       ),
@@ -115,7 +123,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'Please enter a  value';
+                    return 'Please enter a title';
                   }
                   return null;
                 },
@@ -140,6 +148,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_descriptionFocusNode);
                 },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter a price';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number.';
+                  }
+                  if (double.parse(value) <= 0) {
+                    return 'Please enter a number greater than 0 (Zero)';
+                  }
+                  return null;
+                },
                 onSaved: (value) {
                   _editedProduct = Product(
                     id: null,
@@ -157,6 +177,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.multiline,
                 focusNode: _descriptionFocusNode,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter a description';
+                  }
+                  if (value.length < 10) {
+                    return 'Description should be atleast 10 letters long';
+                  }
+                  return null;
+                },
                 onSaved: (value) {
                   _editedProduct = Product(
                     id: null,
@@ -190,7 +219,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         : FittedBox(
                             child: Image.network(
                               _imageUrlController.text,
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                             ),
                           ),
                   ),
@@ -203,17 +232,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       textInputAction: TextInputAction.done,
                       controller: _imageUrlController,
                       focusNode: _imageUrlFocusNode,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter a URL (Ensure that the URL is linked to an image)';
+                        }
+                        if (!value.startsWith('http') &&
+                            !value.startsWith('https')) {
+                          return 'Please enter a valid URL';
+                        }
+
+                        return null;
+                      },
                       onEditingComplete: () {
                         setState(() {});
                       },
                       onFieldSubmitted: (_) => {
-                        _saveForm,
+                        _saveForm(),
                       },
                       onSaved: (value) {
                         _editedProduct = Product(
                           id: null,
                           title: _editedProduct.title,
-                          description: value,
+                          description: _editedProduct.description,
                           price: _editedProduct.price,
                           imageUrl: value,
                         );
