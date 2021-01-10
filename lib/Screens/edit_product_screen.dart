@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// import 'package:shoppers_Stop/providers/products_provider.dart';
+import '../providers/products.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product';
@@ -12,16 +14,27 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _descriptionFocusNode = FocusNode();
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
+  final _form = GlobalKey<FormState>();
+  var _editedProduct = Product(
+    id: null,
+    title: '',
+    price: 0,
+    description: '',
+    imageUrl: '',
+  );
+//A global key is needed when we need to interact with widgets in our code
 
   @override
+  //the following initstate hasFoucus helps in rendering the image that we get from the imageURL
   void initState() {
     _imageUrlFocusNode.addListener(_updateImageUrl);
+    super.initState();
   }
 
   @override
   void dispose() {
     _imageUrlFocusNode.removeListener(_updateImageUrl);
-    //Focus Nodes should always be disposed else it resulrs in a
+    //Focus Nodes should always be disposed else it results in a memory leak
     _priceFocusNode.dispose();
     _imageUrlFocusNode.dispose();
     _descriptionFocusNode.dispose();
@@ -33,6 +46,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (!_imageUrlFocusNode.hasFocus) {
       setState(() {});
     }
+  }
+
+  void _saveForm() {
+    final isValid = _form.currentState.validate();
+    if (!isValid) {
+      return;
+    }
+    _form.currentState.save();
+    print(_editedProduct.title);
+    print(_editedProduct.description);
+    print(_editedProduct.price);
+    print(_editedProduct.imageUrl);
   }
 
   @override
@@ -62,11 +87,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.save,
+            ),
+            onPressed: () {},
+          ),
+        ],
       ),
       //Form gets submitted and validated together
       body: Padding(
         padding: const EdgeInsets.all(18.0),
         child: Form(
+          key: _form,
           child: ListView(
             children: [
               //TextFormFields are automatically connected to Form widgets
@@ -78,6 +112,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 onFieldSubmitted: (_) {
                   //When he next button is presswd on the soft key board, this helps in passing the control to focusNode at line number 64
                   FocusScope.of(context).requestFocus(_priceFocusNode);
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter a  value';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _editedProduct = Product(
+                    id: null,
+                    title: value,
+                    description: _editedProduct.description,
+                    price: _editedProduct.price,
+                    imageUrl: _editedProduct.imageUrl,
+                  );
                 },
               ),
               // Spacer(),
@@ -91,6 +140,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_descriptionFocusNode);
                 },
+                onSaved: (value) {
+                  _editedProduct = Product(
+                    id: null,
+                    title: _editedProduct.title,
+                    description: _editedProduct.description,
+                    price: double.parse(value),
+                    imageUrl: _editedProduct.imageUrl,
+                  );
+                },
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -99,8 +157,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.multiline,
                 focusNode: _descriptionFocusNode,
+                onSaved: (value) {
+                  _editedProduct = Product(
+                    id: null,
+                    title: _editedProduct.title,
+                    description: value,
+                    price: _editedProduct.price,
+                    imageUrl: _editedProduct.imageUrl,
+                  );
+                },
               ),
+              // Spacer(),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
@@ -134,6 +203,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       textInputAction: TextInputAction.done,
                       controller: _imageUrlController,
                       focusNode: _imageUrlFocusNode,
+                      onEditingComplete: () {
+                        setState(() {});
+                      },
+                      onFieldSubmitted: (_) => {
+                        _saveForm,
+                      },
+                      onSaved: (value) {
+                        _editedProduct = Product(
+                          id: null,
+                          title: _editedProduct.title,
+                          description: value,
+                          price: _editedProduct.price,
+                          imageUrl: value,
+                        );
+                      },
                     ),
                   ),
                 ],
